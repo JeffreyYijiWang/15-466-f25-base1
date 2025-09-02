@@ -24,6 +24,7 @@
 #include "Load.hpp"
 #include "pipeline.hpp"
 
+// Credit to Jim  wayback machine https://web.archive.org/web/20221023022110/https://15466.courses.cs.cmu.edu/lesson/assets, Kenechuku discord post, and Chatgpt reference to teh cppreference for help with pipeline and asset loading
 
 SpriteAsset* g_atlas   = nullptr;
 

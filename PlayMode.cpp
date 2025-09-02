@@ -8,6 +8,58 @@
 
 #include <random>
 
+
+#include <iostream>
+#include <fstream>  
+#include <array>
+#include <vector>
+#include <stdexcept>
+#include <string>
+#include <stdint.h>
+#include <algorithm> 
+
+
+#include "load_save_png.hpp"
+#include "data_path.hpp"
+#include "Load.hpp"
+#include "pipeline.hpp"
+
+
+SpriteAsset* g_atlas   = nullptr;
+
+Load<void> load_game_assets(LoadTagDefault, [](){
+	
+    glm::uvec2 size;
+    std::vector<glm::u8vec4> pixels;
+
+    load_png(data_path("Sprite/blue.png"), &size, &pixels, LowerLeftOrigin);
+    auto packed = build_palette_and_tiles(size, pixels);
+
+    SpriteAsset asset;
+    asset.name = "blue";
+    asset.palettes.push_back(packed.palette);
+    asset.tiles = packed.tiles;
+
+    // Write pack:
+    {
+    std::ofstream out(data_path("assets.pack"), std::ios::binary);
+    std::vector<SpriteAsset> all = { asset };
+    write_sprite_assets(all, &out);
+    }
+
+    // Read pack:
+    std::vector<SpriteAsset> loaded;
+    {
+    std::ifstream in(data_path("assets.pack"), std::ios::binary);
+    loaded = read_sprite_assets(in);
+    }
+
+	g_atlas = &loaded[0];
+    std::cout << "Loaded " << loaded.size() << " assets." << std::endl;
+});
+
+
+
 PlayMode::PlayMode() {
 	//TODO:
 	// you *must* use an asset pipeline of some sort to generate tiles.
